@@ -1,9 +1,13 @@
+// src/components/PrintJson.vue
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useTodosStore }  from '../stores/todosStore'
+import { editTodo }       from '../composables/edit.js'
 
-const store   = useTodosStore()
-const newTodo = ref({ UserId: null, TaskID: null, Title: '', Completed: false })
+const store        = useTodosStore()
+const newTodo      = ref({ UserId: null, TaskID: null, Title: '', Completed: false })
+const updatedTodo  = ref({ UserId: '', TaskID: '', Title: '', Completed: false })
+const deleteID     = ref('')
 
 onMounted(() => {
   store.loadTodos()
@@ -14,6 +18,15 @@ async function addTodo() {
   newTodo.value = { UserId: '', TaskID: '', Title: '', Completed: false }
 }
 
+async function editTodoHandler() {
+  try {
+    await editTodo(updatedTodo.value.TaskID, updatedTodo.value)
+    await store.loadTodos(true)
+    alert('Task updated!')
+  } catch (err) {
+    alert('Failed to update task')
+  }
+}
 </script>
 
 <template>
@@ -24,7 +37,6 @@ async function addTodo() {
 
     <div class="div2">
       <div class="todo-container">
-        <!-- Form to add a new todo -->
         <form class="todo-form">
           <div>
             <label for="userId">User ID:</label>
@@ -69,7 +81,13 @@ async function addTodo() {
     </div>
 
     <div class="div3">
-      <button>Delete A TO DO</button>
+      <button @click="store.deleteATodo(todo.TaskID)">Delete A TO DO</button>
+      <input
+              id="userId"
+              type="text"
+              v-model="deleteID"
+              required
+            />
     </div>
 
     <div class="div4">
@@ -113,13 +131,13 @@ async function addTodo() {
   display: grid;
   grid-template-columns: 200px 1fr;
   grid-template-rows:
-    auto       /* div1: Add button */
-    180px      /* div2: Delete form */
-    auto       /* div3: Delete button */
-    auto       /* div4: Edit button */
-    180px      /* div5: Edit form */
-    auto       /* возможно футер или ещё элемент */
-    300px;     /* div7: Список */
+    auto       
+    180px      
+    auto       
+    auto       
+    180px      
+    auto     
+    300px;     
   gap: 16px;
 }
 
@@ -132,7 +150,7 @@ async function addTodo() {
 
 .div7 {
   grid-column: 2;
-  grid-row: 2 / span 5; /* растягивается по высоте */
+  grid-row: 2 / span 5;
   margin-top: 0;
   overflow: auto;
 }

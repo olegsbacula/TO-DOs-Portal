@@ -2,6 +2,7 @@
 import { defineStore }    from 'pinia'
 import { ref }            from 'vue'
 import { getAllTodos }    from '../composables/getall.js'
+import {deleteTodo} from '../composables/delete.js'
 import { postANewTodo }   from '../composables/add.js'
 
 export const useTodosStore = defineStore('todos', () => {
@@ -37,10 +38,21 @@ export const useTodosStore = defineStore('todos', () => {
       throw err
     }
   }
+  
+async function deleteATodo(taskID) {
+  try {
+    await deleteTodo(taskID)
+    todos.value = todos.value.filter(todo => todo.TaskID !== taskID)
+  } catch (err) {
+    console.error('Store failed to delete To Do:', err)
+    throw err
+  }
+}
 
   return {
     todos,
     loadTodos,
     addATodo,
+    deleteATodo
   }
 })
