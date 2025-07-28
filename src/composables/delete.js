@@ -1,18 +1,17 @@
 import axios from 'axios'
 
 /**
- * Update Task's .
- * 
- * @param {string} taskId - Task's ID 
- * @param {Object} updatedTodo -  Task's todo update
+ * Delete task.
+ *
+ * @param {string} taskId - Task's ID
  * @returns {Promise<string>}
  */
-export async function editTodo(taskId, updatedTodo) {
+export async function deleteTodo(taskId) {
   try {
-    const res = await axios.put(`http://localhost:8080/edittodo/${taskId}`, updatedTodo)
+    const res = await axios.delete(`http://localhost:8080/delete/${taskId}`)
     return res.data
   } catch (err) {
-    console.error('Failed to edit TODO:', err)
+    console.error('Failed to delete TODO:', err)
     throw err
   }
 }
